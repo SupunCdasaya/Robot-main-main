@@ -19,7 +19,7 @@ void right_motor(int speed, bool direction, int error) {
         digitalWrite(RM_FW, LOW);
         digitalWrite(RM_BW, HIGH);
     }
-    analogWrite(RM_EN, speed - error);
+    analogWrite(RM_EN, constrain(speed - error, 0, 255));
 }
 
 void left_motor(int speed, bool direction, int error){
@@ -30,7 +30,7 @@ void left_motor(int speed, bool direction, int error){
         digitalWrite(LM_FW, LOW);
         digitalWrite(LM_BW, HIGH);
     }
-    analogWrite(LM_EN, speed + error);
+    analogWrite(LM_EN, constrain(speed + error, 0, 255));
 }
 
 void forward(int leftSpeed, int rightSpeed, int error) {

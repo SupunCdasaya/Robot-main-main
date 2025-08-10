@@ -26,7 +26,6 @@ int compute_pid(int error, int previous_error, float Kp, float Kd) {
 
 
 //================ Encoder PID ==========
-
 int calculate_error_encoder(long encoderCount_Left, long encoderCount_Right) {
     // Calculate the error based on encoder counts
     // This is a placeholder implementation; adjust as needed
@@ -34,30 +33,41 @@ int calculate_error_encoder(long encoderCount_Left, long encoderCount_Right) {
     return error;
 }
 
-int compute_pid_encoder(int error, int previous_error, float Kp, float Kd, float Ki) {
+int compute_pid_encoder(int error, int previous_error, int &integral, float Kp, float Kd, float Ki) {
     // Compute the PID output based on encoder counts
     int derivative = error - previous_error;
-    int integral = previous_error + error; // Integral term, not used in this example
+    integral += error; // Integral term
     int pid_output = Kp * error + Kd * derivative + Ki * integral;
     return pid_output;
 }
 
 //=============== Gyro ================================
+float gyro_error(int target, int current) {
+  float diff = target - current;
+  if (diff > 180) diff -= 360;
+  if (diff < -180) diff += 360;
+  return diff;
+}
 
-
-float headingPID(float targetHeading, float currentHeading) {
-    float heading = currentHeading;
+float gyro_pid(int error, int prev_error, float Kp, float Ki, float Kd, int &gyro_i){
+    int derivative = error - prev_error;
+    gyro_i += error;
+    float output = Kp * error + Ki * gyro_i + Kd * derivative;
+    return output;
+}
+/*float headingPID(int targetHeading, int currentHeading, int previous_Error, float Kp, float Ki, float Kd) {
+    int heading = currentHeading;
 
     // Calculate shortest direction error
-    float error = targetHeading - heading;
+    int error = targetHeading - heading;
     if (error > 180) error -= 360;
     if (error < -180) error += 360;
 
     // PID calculations
-    integral += error;
-    float derivative = error - lastError;
-    lastError = error;
+    integral = previous_Error + error;
+    int derivative = error - previous_Error;
+    previous_Error = error;
 
-    float output = Kpc * error + Kic * integral + Kdc * derivative;
+    float output = Kp * error + Ki * integral + Kd * derivative;
     return output; // This should be mapped to motor speeds
-}
+}*/

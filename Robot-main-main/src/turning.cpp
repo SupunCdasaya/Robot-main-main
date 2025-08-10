@@ -92,6 +92,7 @@ void turn180(bool left) {
 }
 
 //===================== Gyro ========================
+/*
 void turn90(bool clockwise, float currentHeading) {
     float startHeading = currentHeading;
     float targetHeading = startHeading + (clockwise ? 90 : -90);
@@ -118,3 +119,4 @@ void turn180_gyro(float currentHeading) {
     }
     // setMotorSpeed(0, 0); // stop motors
 }
+    */
