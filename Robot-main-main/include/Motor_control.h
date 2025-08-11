@@ -5,11 +5,13 @@
 
 // Define motor control pins
 #define LM_EN 5
-#define LM_BW 25
-#define LM_FW 23
+#define LM_EN_2 7
+//#define LM_BW 25
+//#define LM_FW 23
 #define RM_EN 6
-#define RM_BW 27
-#define RM_FW 29
+#define RM_EN_2 8
+//#define RM_BW 27
+//#define RM_FW 29
 
 
 void motor_pin_configuration();

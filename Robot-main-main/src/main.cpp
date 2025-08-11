@@ -109,8 +109,8 @@ void loop() {
 
   //========== Encoder PID ==========
   if(right_speed<100 && left_speed<100){
-    right_speed += 4;
-    left_speed += 6;
+    right_speed += 5;
+    left_speed += 5;
   }
   encoder_error = calculate_error_encoder(encoderCount_Left, encoderCount_Right);
   encoder_pid_output = compute_pid_encoder(encoder_error, previous_encoder_error, encoder_integral, KPe, KDe, KIe);
@@ -124,7 +124,7 @@ void loop() {
   display.setCursor(0, 0);
   display.println("Left Count: " + String(encoderCount_Left));
   display.println("Right Count: " + String(encoderCount_Right));
-  display.println("Error: " + String(encoder_error));
+  display.println("Error: R-L " + String(encoder_error));
   display.println("KPe: " + String(KPe));
   display.println("PID Output: " + String(encoder_pid_output));
   display.println("Speed:R L " + String(right_speed) +" "+ String(left_speed));
@@ -206,7 +206,7 @@ void loop() {
 
     Serial.print("left speed: " + String(left_speed));
     Serial.println(" right speed: " + String(right_speed));
-    forward(left_speed, right_speed, encoder_pid_output);
+    //forward(left_speed, right_speed, encoder_pid_output);
    // Use PID output for correction forward( leftSpeed,  rightSpeed,  error);
   
   /*
@@ -240,8 +240,7 @@ void loop() {
     }  
 
     */
-    
-/*
+  /*/  
   delay(1000);
   Serial.println("Turning left");
   turnLeft();  
@@ -250,15 +249,16 @@ void loop() {
   delay(1000);
   Serial.println("Turning right");
   turnRight();
-  delay(1000);*/
-  /*
+  delay(1000);
+  forward(100, 100, 0);*/
+
 delay(1000);
 turn180(1);
 delay(1000);
-forward(105, 90, 0);
+forward(100, 100, 0);
 delay(1000);
-turn180(0);
+turn180(1);
 delay(1000);
-*/
+forward(100, 100, 0);
 
 }
