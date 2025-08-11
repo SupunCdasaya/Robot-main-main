@@ -12,16 +12,20 @@ void motor_pin_configuration() {
 void right_motor(int speed, bool direction, int error) {
     if(direction == 1){ // Forward
       analogWrite(LM_EN, constrain(speed + error, 0, 255));
+      //Serial.print("Right motor forward: " + String(speed + error));
     }else{ // Backward
       analogWrite(LM_EN_2, constrain(speed + error, 0, 255));
+      //Serial.print("Right motor backward: " + String(speed + error));
     }
 }
 
 void left_motor(int speed, bool direction, int error){
     if(direction == 1){ // Forward
       analogWrite(RM_EN, constrain(speed - error, 0, 255));
+      //Serial.println("Left motor forward: " + String(speed - error));
     }else{ // Backward
       analogWrite(RM_EN_2, constrain(speed - error, 0, 255));
+      //Serial.println("Left motor backward: " + String(speed - error));
     }
     
 }

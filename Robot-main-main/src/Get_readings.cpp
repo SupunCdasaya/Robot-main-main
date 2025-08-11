@@ -14,7 +14,10 @@ void IR_pin_configuration() {
 void read_IR_sensors(int readings[10]) {
     for (int i = 0; i < 9; i++) {
         readings[i] = analogRead(IR_PINS[i]);
+        Serial.print(readings[i]);
+        Serial.print(" ");
     }
+    Serial.println("");
 }
 
 void print_IR_readings(const int readings[9]) {
@@ -61,10 +64,10 @@ void digitalize_with_calibrated_threshold(const int analog_readings[9], const in
         digital[i] = (analog_readings[i] > thresholds[i]) ? 1 : 0;
     }
     // Print the digitalized array
-    Serial.print("Digitalized: ");
-    for (int i = 0; i < 9; i++) {
-        Serial.print(digital[i]);
-        if (i < 8) Serial.print(", ");
-    }
-    Serial.println();
+    // Serial.print("Digitalized: ");
+    // for (int i = 0; i < 9; i++) {
+    //     Serial.print(digital[i]);
+    //     if (i < 8) Serial.print(", ");
+    // }
+    // Serial.println();
 }

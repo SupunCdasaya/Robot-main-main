@@ -6,8 +6,8 @@
 #include "PID_controller.h"
 
 // Define motor speed
-#define SPEED 150
-#define turncount1 190
+#define SPEED 80
+#define turncount1 150
 #define turncount2 150
 #define turncount3 370
 #define turncount4 360
@@ -24,13 +24,9 @@ void turnLeft() {
     encoderCount_Right = 0;
     interrupts();
     right_motor(SPEED, 1, 0); // right forward
-    left_motor(SPEED, 0, 0); // left backward
+    //left_motor(SPEED, 0, 0); // left backward
 
     while (encoderCount_Left > -turncount1 || encoderCount_Right < turncount1) {
-        L_speed-=5;
-        left_motor(L_speed, 0, 0);
-        R_speed-=5;
-        right_motor(R_speed, 1, 0);
         Serial.print("encoderCount_Left: ");
         Serial.print(encoderCount_Left);
         Serial.print(" ");
@@ -60,11 +56,7 @@ void turnRight() {
     left_motor(SPEED, 1, 0); // Left motor forward
 
     while (encoderCount_Right > -turncount2 || encoderCount_Left < turncount2) {
-        L_speed-=5;
-        left_motor(L_speed, 1, 0);
-        R_speed-=5;
-        right_motor(R_speed, 0, 0);
-        Serial.print("encoderCount_Right: ");
+         Serial.print("encoderCount_Right: ");
         Serial.print(encoderCount_Right);
         Serial.print(" ");
         Serial.print("encoderCount_Left: ");

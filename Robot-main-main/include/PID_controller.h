@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 
-#define KP  8.0 // Proportional gain 8
-#define KD  4.0 // Derivative gain 0.5
+#define KP  8.5 // Proportional gain 8
+#define KD  1.0 // 4// Derivative gain 0.5
 #define kI  0.0 // Integral gain (not used in this example)
 
 //=============== Encoder ================================
