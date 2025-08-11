@@ -14,10 +14,7 @@ void IR_pin_configuration() {
 void read_IR_sensors(int readings[10]) {
     for (int i = 0; i < 9; i++) {
         readings[i] = analogRead(IR_PINS[i]);
-        Serial.print(readings[i]);
-        Serial.print(" ");
     }
-    Serial.println("");
 }
 
 void print_IR_readings(const int readings[9]) {

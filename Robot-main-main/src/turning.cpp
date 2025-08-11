@@ -6,7 +6,7 @@
 #include "PID_controller.h"
 
 // Define motor speed
-#define SPEED 80
+#define SPEED 60
 #define turncount1 150
 #define turncount2 150
 #define turncount3 370

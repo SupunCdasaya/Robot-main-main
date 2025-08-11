@@ -141,17 +141,25 @@ void handleSpecialCross(const char* crossType, const int analog_readings[9], con
             updateCrossArray('S');
             forward(70,70,0);
             delay(10);
-            stopMotors();  
+            stopMotors();
+            delay(500);
         } else if (allZero) {
             updateCrossArray('L');
+            forward(70,70,0);
+            delay(250);
             turnLeft();
             forward(0,0,0);
             backward(70, 70, 0);
-            while (encoderCount_Left < 200 && encoderCount_Right < 200) {
-                if (encoderCount_Right >= 200) backward(200, 0, 0);
-                if (encoderCount_Left >= 200) backward(200, 0, 0);
-            }
-            stopMotors();   
+            delay(150);
+            stopMotors(); 
+            delay(1000);
+            // encoderCount_Left = 0;
+            // encoderCount_Right = 0;
+            // while (encoderCount_Left > -50 && encoderCount_Right > -50) {
+            //     if (encoderCount_Right <= -50) right_motor(50, 0, 0);
+            //     if (encoderCount_Left <= -50) left_motor(50, 0, 0);
+            // }
+            // stopMotors();   
         }
     } 
     else if (strcmp(crossType, "t_right") == 0) {
