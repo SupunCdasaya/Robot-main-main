@@ -76,12 +76,6 @@ void setup() {
 
   attachInterrupt(digitalPinToInterrupt(ENCODER_LEFT_A), countEncLeft, RISING);
   attachInterrupt(digitalPinToInterrupt(ENCODER_RIGHT_A), countEncRight, RISING);
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  display.println("Threshold: ");
-  display.println(String(thresholds[0]) + " " + String(thresholds[2]) + " " + String(thresholds[3]) + " " + String(thresholds[4]) + " " + String(thresholds[5]) + " " );
-  display.println("Min: " + String(thresholds[1]));
-  display.display();
 }
 
 void loop() {
@@ -89,32 +83,30 @@ void loop() {
   //========= IR PID ==========
   read_IR_sensors(readings);
   digitalize_with_calibrated_threshold(readings, thresholds, digital);
-  bool cross = digital[0] && digital[1] && digital[2] && digital[3] && digital[4] && digital[5] && digital[6] && digital[7] && digital[8];
+  bool cross = (digital[0] || digital[1]) && digital[2] && digital[3] && digital[4] && digital[5] && digital[6] && (digital[7] || digital[8]);
   bool t_left = (digital[0] && digital[1] && digital[2] && digital[3]) && digital[4];
   bool t_right = (digital[5] && digital[6] && digital[7] && digital[8]) && digital[4];
   bool white = (!digital[0]) && (!digital[1]) && (!digital[2]) && (!digital[3]) && (!digital[4]) && (!digital[5]) && (!digital[6]) && (!digital[7]) && (!digital[8]);
 
   if(cross == true || t_left == true || t_right == true || white == true) {
-    pid_output = 0;
     if(cross) {
       Serial.println("Cross detected: Cross");
       buzzer_on(1, 50);
       handleSpecialCross("cross", digital, thresholds);
+      delay(500);
     } else if (t_left) {
       Serial.println("Cross detected: T-Left");
       buzzer_on(2, 20);
       handleSpecialCross("t_left", digital, thresholds);
     } else if (t_right) {
-      //Serial.println("Cross detected: T-Right");
+      Serial.println("Cross detected: T-Right");
       buzzer_on(3, 20);
       handleSpecialCross("t_right", digital, thresholds);
     }else if(white) {
-      //Serial.println("Cross detected: White");
+      Serial.println("Cross detected: White");
       buzzer_on(1, 200);
       turn180(1);
-      backward(70, 70, 0);//bit forward
-      delay(100);
-      stopMotors();
+      //bit forward
     }
   } else {
     error = calculate_error(digital);
@@ -122,11 +114,11 @@ void loop() {
     //pid_output = map(pid_output, 0, 200, 0, 150);
     previous_error = error;
     forward(80, 80, -pid_output);
-    // display.clearDisplay();
-    // display.setCursor(0, 0);
-    // display.println("Error: " + String(error));
-    // display.println("pid_output: " + String(pid_output));
-    // display.display();
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.println("Error: " + String(error));
+    display.println("pid_output: " + String(pid_output));
+    display.display();
   }
 
   //========== Encoder PID ==========

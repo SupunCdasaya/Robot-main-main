@@ -122,7 +122,7 @@ void handleSpecialCross(const char* crossType, const int analog_readings[9], con
     // Move a bit forward before checking
     stopMotors();
     forward(70, 70, 0);
-    delay(200);
+    delay(250);
     stopMotors();
     //buzzer_on(2,100);
     read_IR_sensors(iranalog_array);
@@ -141,8 +141,7 @@ void handleSpecialCross(const char* crossType, const int analog_readings[9], con
             updateCrossArray('S');
             forward(70,70,0);
             delay(10);
-            stopMotors();
-            delay(500);
+            stopMotors();  
         } else if (allZero) {
             updateCrossArray('L');
             forward(70,70,0);
@@ -150,58 +149,71 @@ void handleSpecialCross(const char* crossType, const int analog_readings[9], con
             turnLeft();
             forward(0,0,0);
             backward(70, 70, 0);
-            delay(150);
-            stopMotors(); 
-            delay(1000);
+            delay(200);
             // encoderCount_Left = 0;
             // encoderCount_Right = 0;
             // while (encoderCount_Left > -50 && encoderCount_Right > -50) {
             //     if (encoderCount_Right <= -50) right_motor(50, 0, 0);
             //     if (encoderCount_Left <= -50) left_motor(50, 0, 0);
             // }
-            // stopMotors();   
+            stopMotors(); 
+            delay(500);
+            for(int i=0; i<= 10; i++){
+                forward(i*7,i*7,0);
+                delay(25);
+            }
         }
     } 
     else if (strcmp(crossType, "t_right") == 0) {
+        forward(70, 70, 0);
+        delay(100);
         turnRight();
         forward(0,0,0);
         backward(70, 70, 0);
-        while (encoderCount_Left < 150 && encoderCount_Right < 150) {
-            if (encoderCount_Right >= 150) backward(150, 0, 0);
-            if (encoderCount_Left >= 150) backward(150, 0, 0);
-        }
-        stopMotors();   
+        delay(350);
+        stopMotors();
+        delay(500);
     } 
     else if (strcmp(crossType, "cross") == 0) {
+        delay(1000);
         bool allOne = (irArray[0] == 1 && irArray[1] == 1 && irArray[2] == 1 && irArray[3] == 1 && irArray[4] == 1 && irArray[5] == 1 && irArray[6] == 1 && irArray[7] == 1 && irArray[8] == 1);
         bool allZero = (irArray[0] == 0 && irArray[1] == 0 && irArray[2] == 0 && irArray[3] == 0 && irArray[4] == 0 && irArray[5] == 0 && irArray[6] == 0 && irArray[7] == 0 && irArray[8] == 0);
-        bool plusCross = (irArray[3] == 1 || irArray[4] == 1 || irArray[5] == 1);
+        bool plusCross = (irArray[2]==1 && irArray[3]==1) || (irArray[3]==1 && irArray[4]==1) || (irArray[4]==1 && irArray[5]==1) || (irArray[5]==1 && irArray[6]==1);
         if (allOne) {
             updateCrossArray('D', true);
-        } 
-        
+        }
+
         else if (allZero) {
             updateCrossArray('R');
             turnRight();
             forward(0,0,0);
             backward(70, 70, 0);
-            while (encoderCount_Left < 150 && encoderCount_Right < 150) {
-                if (encoderCount_Right >= 150) backward(150, 0, 0);
-                if (encoderCount_Left >= 150) backward(150, 0, 0);
-            }
-            stopMotors();   
-        } 
-        
+            encoderCount_Left = 0;
+            encoderCount_Right = 0;
+            // while (encoderCount_Left < 250 && encoderCount_Right < 250) {
+            //     if (encoderCount_Right >= 250) backward(250, 0, 0);
+            //     if (encoderCount_Left >= 250) backward(250, 0, 0);
+            // }
+            delay(250);
+            stopMotors();
+            delay(500);
+        }
         else if (plusCross) {
             updateCrossArray('R');
+            forward(70,70,0);
+            delay(250);
             turnRight();
             forward(0,0,0);
             backward(100, 100, 0);
-            while (encoderCount_Left < 100 && encoderCount_Right < 100) {
-                if (encoderCount_Right >= 100) backward(100, 0, 0);
-                if (encoderCount_Left >= 100) backward(100, 0, 0);
-            }
-            stopMotors();   
+            encoderCount_Left = 0;
+            encoderCount_Right = 0;
+            // while (encoderCount_Left < 100 && encoderCount_Right < 100) {
+            //     if (encoderCount_Right >= 100) backward(100, 0, 0);
+            //     if (encoderCount_Left >= 100) backward(100, 0, 0);
+            // }
+            delay(300);
+            stopMotors();
+            delay(500);   
         }
     }
 }
