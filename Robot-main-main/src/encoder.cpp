@@ -3,8 +3,8 @@
 
 volatile long encoderCount_Left = 0;
 volatile long encoderCount_Right = 0;
-
-
+volatile bool left_ISR_hit = 0;
+volatile bool right_ISR_hit = 0;
 
  void countEncLeft() {
     if(digitalRead(ENCODER_LEFT_B) == LOW) {
@@ -12,6 +12,7 @@ volatile long encoderCount_Right = 0;
     } else {
         encoderCount_Left--;
     }
+    left_ISR_hit = 1;
 }
 
 void countEncRight() {
@@ -20,4 +21,5 @@ void countEncRight() {
     } else {
         encoderCount_Right--;
     }
+    right_ISR_hit = 1;
 }

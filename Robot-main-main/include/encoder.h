@@ -9,6 +9,9 @@
 extern volatile long encoderCount_Left;
 extern volatile long encoderCount_Right;
 
+extern volatile bool left_ISR_hit;
+extern volatile bool right_ISR_hit;
+
 void countEncLeft();
 void countEncRight();
 

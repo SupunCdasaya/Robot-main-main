@@ -8,8 +8,8 @@
 // Define motor speed
 #define SPEED 80
 #define turncount1 180 // 150
-#define turncount2 170 // 150
-#define turncount3 370
+#define turncount2 175 // 150
+#define turncount3 365
 #define turncount4 360
 
 

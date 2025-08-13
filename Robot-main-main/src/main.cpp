@@ -31,6 +31,18 @@ int previous_encoder_error = 0;
 int encoder_pid_output = 0;
 int encoder_integral = 0;
 int encoder_reading_zero = 0;
+int left_encoder_count_per_rotation = 223;
+int right_encoder_count_per_rotation = 225;
+float wheel_diameter = 6.5;
+float wheel_circumference = wheel_diameter * PI;
+float game_field_length = 1800.0;  // Length of the game field in cm
+float game_field_width = 600.0;     // Width of the game field in cm
+int traveled_length = 0;
+int target_travel = 0;
+bool ISR_hit = 0;
+int lines = 0;
+bool length_travel_EN = 1;
+bool width_travel_EN = 0;
 
 //====== Gyro Initialization ======
 float pid_output_gyro = 0;
@@ -69,17 +81,19 @@ void setup() {
   motor_pin_configuration();
   buzzer_on(3, 100);
   Serial.println("IR sensors calibration started.");
-  calibrate_IR_sensors(thresholds, 200); // Calibrate IR sensors with 200 samples, store thresholds
+  calibrate_IR_sensors(thresholds, 50); // Calibrate IR sensors with 50 samples, store thresholds
   Serial.println("IR sensors calibration completed.");
   buzzer_on(3, 100);
   delay(1000);
+
+  target_travel = game_field_length;
 
   attachInterrupt(digitalPinToInterrupt(ENCODER_LEFT_A), countEncLeft, RISING);
   attachInterrupt(digitalPinToInterrupt(ENCODER_RIGHT_A), countEncRight, RISING);
 }
 
 void loop() {
-
+/*
   //========= IR PID ==========
   read_IR_sensors(readings);
   digitalize_with_calibrated_threshold(readings, thresholds, digital);
@@ -120,33 +134,108 @@ void loop() {
     display.println("pid_output: " + String(pid_output));
     display.display();
   }
-
+*/
   //========== Encoder PID ==========
-  // if(right_speed<100 && left_speed<100){
-  //   right_speed += 5;
-  //   left_speed += 5;
-  // }
-  // encoder_error = calculate_error_encoder(encoderCount_Left, encoderCount_Right);
-  // encoder_pid_output = compute_pid_encoder(encoder_error, previous_encoder_error, encoder_integral, KPe, KDe, KIe);
-  // previous_encoder_error = encoder_error;
+  if(right_speed<100 && left_speed<100){
+    right_speed += 5;
+    left_speed += 5;
+  }
+  encoder_error = calculate_error_encoder(encoderCount_Left, encoderCount_Right);
+  encoder_pid_output = compute_pid_encoder(encoder_error, previous_encoder_error, encoder_integral, KPe, KDe, KIe);
+  previous_encoder_error = encoder_error;
 
-  // Serial.print("Encoder PID Output: "); 
-  // Serial.println(encoder_pid_output);
-  // --------------------
-  // Display data on OLED
-  // --------------------
-  // display.clearDisplay();
-  // display.setCursor(0, 0);
-  // display.println("Left Count: " + String(encoderCount_Left));
-  // display.println("Right Count: " + String(encoderCount_Right));
-  // display.println("Error: R-L " + String(encoder_error));
-  // display.println("KPe: " + String(KPe));
-  // display.println("PID Output: " + String(encoder_pid_output));
-  // display.println("Speed:R L " + String(right_speed) +" "+ String(left_speed));
-  // display.display();
+  Serial.print("Encoder PID Output: "); 
+  Serial.println(encoder_pid_output);
+  //--------------------
+  //Display data on OLED
+  //--------------------
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.println("Left Count: " + String(encoderCount_Left));
+  display.println("Right Count: " + String(encoderCount_Right));
+  display.println("Error: R-L " + String(encoder_error));
+  display.println("KPe: " + String(KPe));
+  display.println("PID Output: " + String(encoder_pid_output));
+  display.println("Speed:R L " + String(right_speed) +" "+ String(left_speed));
+  display.display();
 
-  // Serial.print("left speed: " + String(left_speed));
-  // Serial.println(" right speed: " + String(right_speed));
-  // forward(left_speed, right_speed, -encoder_pid_output);
-   
+  Serial.print("left speed: " + String(left_speed));
+  Serial.println(" right speed: " + String(right_speed));
+  forward(left_speed, right_speed, -encoder_pid_output);
+
+  if(left_ISR_hit == 1 && right_ISR_hit == 1){
+    left_ISR_hit = 0;
+    right_ISR_hit = 0;
+    ISR_hit = 1;
+  }
+
+  if((traveled_length<=target_travel) && ISR_hit == 1 && length_travel_EN == 1){
+    traveled_length += (wheel_circumference * (encoderCount_Left + encoderCount_Right) / (2*(left_encoder_count_per_rotation+right_encoder_count_per_rotation)));
+     forward(left_speed, right_speed, -encoder_pid_output);
+    ISR_hit = 0; // Reset ISR hit flag after processing
+  }
+  if((traveled_length<=target_travel) && ISR_hit == 1 && width_travel_EN == 1){
+    traveled_length += (wheel_circumference * (encoderCount_Left + encoderCount_Right) / (2*(left_encoder_count_per_rotation+right_encoder_count_per_rotation)));
+     forward(left_speed, right_speed, -encoder_pid_output);
+    ISR_hit = 0; // Reset ISR hit flag after processing
+  }
+
+  else if(traveled_length>target_travel){
+    lines+=1;
+    if(lines == 1){
+    stopMotors();
+    delay(1000);
+    turn180(1); // Turn 180 degrees
+    encoderCount_Left = 0;
+    encoderCount_Right = 0;
+    traveled_length = 0; // Reset traveled length after turning
+    target_travel = game_field_length;
+    }
+    else if(lines == 2){
+      stopMotors();
+      delay(1000);
+      turnLeft(); // Turn 180 degrees
+      encoderCount_Left = 0;
+      encoderCount_Right = 0;
+      stopMotors();
+      traveled_length = 0;
+      target_travel = (game_field_width/2)-150;
+      //traveled_length = 0; // Reset traveled length after turning
+    }
+    else if(lines == 3){
+      stopMotors();
+      delay(1000);
+      turn180(1); // Turn 180 degrees
+      encoderCount_Left = 0;
+      encoderCount_Right = 0;
+      stopMotors();
+      traveled_length = 0;
+      target_travel = (game_field_width/4)-150;
+    }
+    else if(lines == 4){
+      stopMotors();
+      delay(1000);
+      turnRight(); // Turn 180 degrees
+      encoderCount_Left = 0;
+      encoderCount_Right = 0;
+      traveled_length = 0;
+      target_travel = game_field_length;
+    }
+    else if(lines == 5){
+      stopMotors();
+      delay(1000);
+      turn180(1); // Turn 180 degrees
+      encoderCount_Left = 0;
+      encoderCount_Right = 0;
+      traveled_length = 0;
+      target_travel = game_field_length;
+    }
+    
+    else{
+      stopMotors();
+    }
+  }
+  display.println("Traveled length: " + String(traveled_length));
+  display.display();
+
 }
